@@ -114,6 +114,17 @@ public class DBUtil {
 		return list;
 	}
 	
+	public static boolean ExecuteSql(String sql) {
+		boolean b = false;
+		try {
+			PreparedStatement pre = getConnection().prepareStatement(sql);
+			b = pre.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return b;
+	}
 	/**
 	 * 格式化string为Date
 	 * 

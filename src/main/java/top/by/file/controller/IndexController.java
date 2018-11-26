@@ -30,7 +30,6 @@ public class IndexController extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		List<FileList> list = DBUtil.QueryList("select * from t_file_list order by id asc", FileList.class);
-		System.out.println(list);
 		request.setAttribute("fileList", list);
 		request.setCharacterEncoding("utf-8"); 
 		request.getRequestDispatcher("/index.jsp").forward(request, response);
