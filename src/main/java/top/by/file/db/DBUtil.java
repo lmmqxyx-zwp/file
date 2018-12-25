@@ -14,11 +14,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import top.by.file.util.ExcelUtil;
+import top.by.file.vo.China;
 import top.by.file.vo.FileList;
 
 public class DBUtil {
 	
-	private static final String URL = "jdbc:mysql://192.168.0.244:3306/file?useUnicode=true&characterEncoding=UTF8&allowMultiQueries=true&useSSL=false";
+	private static final String URL = "jdbc:mysql://192.168.0.249:3306/file?useUnicode=true&characterEncoding=UTF8&allowMultiQueries=true&useSSL=false";
 	private static final String USER_NAME = "oppox905";
 	private static final String PASS_WORD = "oppox905";
 
@@ -99,7 +101,10 @@ public class DBUtil {
 					} else if ("Boolean".equalsIgnoreCase(fieldType)) {
 						Boolean temp = Boolean.parseBoolean(rs.getString(columnLabel));
 						fieldSetMet.invoke(bean, temp);
-					} else {
+					} else if ("Float".equals(fieldType)) {
+						Float temp = Float.parseFloat(rs.getString(columnLabel));
+						fieldSetMet.invoke(bean, temp);
+					}else {
 						System.out.println("not supper type" + fieldType);
 					}
 				}
@@ -323,14 +328,61 @@ public class DBUtil {
 	
 	
 	public static void main(String[] args) {
-		System.out.println(getField(new FileList()));
+//		System.out.println(getField(new FileList()));
+//		
+//		String field = "fileNameKK33a";
+//		
+//		System.out.println(HumpToUnderline(field));
+//		List<FileList> list = QueryList("select * from t_file_list;", FileList.class);
+//		for (FileList fileList : list) {
+//			System.out.println(fileList);
+//		}
 		
-		String field = "fileNameKK33a";
-		
-		System.out.println(HumpToUnderline(field));
-		List<FileList> list = QueryList("select * from t_file_list;", FileList.class);
-		for (FileList fileList : list) {
-			System.out.println(fileList);
+		new DBUtil().insertChinaInit();
+	}
+	
+	public void insertChinaInit() {
+		try {
+			String EXCEL_PATH = "C:/Users/zwp/Desktop/file-master/src/main/java/top/by/file/china.xls";
+			int SHEET_NUM 	  = 0;
+			List<China> list = ExcelUtil.readExcelExample(EXCEL_PATH, SHEET_NUM);
+			String sql = "";
+			for (China china : list) {
+				sql += "insert into t_china ("
+						+ "`id`,"
+						+ "`name`,"
+						+ "`parent_id`,"
+						+ "`short_name`,"
+						+ "`level_type`,"
+						+ "`city_code`,"
+						+ "`zip_code`,"
+						+ "`manager_name`,"
+						+ "`lng`,"
+						+ "`lat`,"
+						+ "`pinyin`) values ("
+						+ "" + china.getId() + "" + ","
+						+ "'" + china.getName() + "'" + ","
+						+ "" + china.getParentId()+ "" + ","
+						+ "'" + china.getShortName() + "'" + ","
+						+ "" + china.getLevelType() + "" + ","
+						+ "'" + china.getCityCode() + "'" + ","
+						+ "'" + china.getZipCode() + "'" + ","
+						+ "'" + china.getManagerName() + "'" + ","
+						+ "" + china.getLng() + "" + ","
+						+ "" + china.getLat() + "" + ","
+						+ "'" + china.getPinyin() + "'"
+						+ ");";
+			}
+			
+			System.out.println(sql);
+			Connection connection = getConnection();
+			boolean rtn = connection.prepareStatement(sql).execute();
+			if (rtn) {
+				System.out.println("china => 初始化成功");
+			}
+			closeConnection();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
